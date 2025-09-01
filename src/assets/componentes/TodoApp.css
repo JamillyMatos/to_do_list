@@ -4,7 +4,7 @@ body{
     background-color: #f4f4f4;
     padding: 30px;
     color: black;
-    background-image: url('./img/natureza.jpg');
+    background-image: url(C:\Users\jamilly\Desktop\to_do_list\img\natureza.jpg);
     background-position: center;
     background-repeat: no-repeat;
     background-size: cover;
@@ -84,5 +84,5 @@ input, select{
     gap: 3rem;
 }
 .filter-options div{
-    flex: 1 1 0;
+    flex: 1 1 0
 }
