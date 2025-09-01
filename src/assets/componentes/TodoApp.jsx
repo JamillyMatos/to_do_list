@@ -1,50 +1,82 @@
 import {useState} from 'react';
 import './TodoApp.css';
+import Todo from './Todo';
+import TodoForm from './TodoForm';
+import Busca from './Busca';
+import Filter from './Filter';
 
 const TodoApp = () => {
     //Lista de Tarefas
-    const [todos, setTodos] = useState([]);
+    const [todos, setTodos] = useState([
+    {
+      id:1,
+      text: "criar funcionalidade x no sistema",
+      categoria: "Trabalho",
+      isCompleted: false,
+    },
+    {
+      id:2,
+      text: "Ir pra academia",
+      categoria: "Pessoal",
+      isCompleted: false,
+    },
+    {
+      id:3,
+      text: "Estudar React",
+      categoria: "Estudos",
+      isCompleted: false,
+    }
+    ]);
 
     // estado de texto da tarefa
-    const [inputValue, setInputValue] = useState("");
+    const addTodo = (text, categoria) => {
+        const newTodos = [...todos, 
+            {
+            id:Math.floor(Math.random() * 1000),
+            text,
+            categoria,
+            isCompleted: false
+            },
+        ];
 
-    // add tarefas
-    const handleSubmit = (e) => {
-        e.preventDefault();
-
-        if(inputValue.trim() !== ""){
-            const newTodo = {
-                id: Date.now(),
-                text: inputValue,
-            };
-
-            setTodos((prevTodos) => [...prevTodos, newTodo]);
-            setInputValue("");
-        };
+        setTodos(newTodos);
     };
 
+    const [busca, setBusca] = useState("");
+    const [filter, setFilter] = useState("All");
+    const [sort, setSort] = useState("Asc");
+
+    const removeTodo = (id) => {
+        const newTodos = [...todos];
+        const filteredTodos = newTodos.filter((todo) => 
+            todo.id !== id ? todo : null);
+        setTodos(filteredTodos);
+    };
+    
+    const completeTodo = (id) => {
+        const newTodos = [...todos];
+        newTodos.map((todo) => todo.id === id ? todo.isCompleted = !todo.isCompleted : todo
+    );
+        setTodos(newTodos);
+    };
+    
     return(
-        <div className='app-container'>
-            <h1 className='titulo'>Lista de Tarefas</h1>
-            {/*Form para adicionar as tarefas*/}
-            <form onSubmit={handleSubmit} className='form-container'>
-                <input type="text" className='input-field' placeholder='Adicione uma tarefa...' value={inputValue} onChange={(e) => setInputValue(e.target.value)} />
-                <button type='submit' className='add-button'>Adicionar tarefa</button>
-            </form>
-
-            {/*Lista de tarefas*/}
-            {todos.length === 0 && <p className='empty'>Não há tarefas</p> }
-
-            <ul className='todo-list'>
-                {todos.map((todo) => (
-                    <li key={todo.id} className='todo-item'>
-                        {todo.text}
-                        <button className='delete-button'>Excluir tarefa</button>
-                    </li>
+        <div className='app'>
+            <h1>Lista de Tarefas</h1>
+            <Busca busca= {busca} setBusca={setBusca}/>
+            <Filter filter = {filter} setFilter={setFilter} setSort={setSort} />
+            <div className='todo-list'>
+                {todos.filter((todo) => filter === "All" ? true : filter === "Completed" ? todo.isCompleted : !todo.isCompleted)
+                .filter((todo) => todo.text.toLowerCase().includes(busca.toLowerCase()))
+                .sort((a,b) => sort === "Asc" ? a.text.localeCompare(b.text) : b.text.localeCompare(a.text))
+                .map((todo) =>
+                (
+                    <Todo key={todo.id} todo = {todo} removeTodo = {removeTodo} completeTodo={completeTodo}/>
                 ))}
-            </ul>
+            </div>
+            <TodoForm addTodo = {addTodo}/>
         </div>
-    )
+    );
 }
 
 export default TodoApp;
